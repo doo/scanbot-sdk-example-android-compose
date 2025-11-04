@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#4b4f52</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#00b92e</color>
+    <color name="backgroundColor">#4b4f52</color>
+    <color name="greyColor">#c4c4c4</color>
+    <color name="sheetColor">#7f8487</color>
+    <color name="сolorWarningBackground">#c8193c</color>
+    <color name="titleSeparatorColor">#204B4F52</color>
+    <color name="textColorPrimary">#FFF</color>
+
+    <color name="scanbot_brand">#FFC8193C</color>
+    <color name="scanbot_brand_highlight">#FFDA2150</color>
+    <color name="scanbot_secondary">#FFFFEDED</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="ar_overlay_highlighted">#55BB77</color>
+    <color name="ar_overlay_not_highlighted">#FF3B30</color>
+</resources>
