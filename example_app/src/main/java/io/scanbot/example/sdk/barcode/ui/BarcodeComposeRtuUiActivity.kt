@@ -29,14 +29,9 @@ class BarcodeComposeRtuUiActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.compose_barcode_scanner)
 
-        // If you use "traditional" Android XML-driven UI - integrate ComposeView into your layout
-        // and use code below to render our BarcodeScannerView in it.
-        val cameraContainerView: ComposeView = findViewById(R.id.compose_container)
-        cameraContainerView.apply {
+        setContentView(ComposeView(this).apply {
             setContent {
-
                 //In case if you already migrated to Compose UI - just use
                 // the code below in your Composable function.
                 val configuration = remember {
@@ -100,6 +95,6 @@ class BarcodeComposeRtuUiActivity : ComponentActivity() {
                     )
                 }
             }
-        }
+        })
     }
 }
