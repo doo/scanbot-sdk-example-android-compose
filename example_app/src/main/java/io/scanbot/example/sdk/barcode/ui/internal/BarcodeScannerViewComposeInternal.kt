@@ -38,17 +38,16 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.runBlocking
 
-
 @Composable
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @ExperimentalCamera2Interop
-fun BarcodeScannerViewClassic(
+fun BarcodeScannerCustomUI(
     modifier: Modifier = Modifier,
-    cameraEnabled: Boolean = true, // not working yet, will be added in feature release
-    torchEnabled: Boolean = false, // torch control, depends on device capabilities
+    cameraEnabled: Boolean = true,
+    torchEnabled: Boolean = false,
     @FloatRange(
         from = 1.0, to = 5.0
-    ) zoom: Float = 1.0f,   // not all the values might be supported depending on device capabilities
+    ) zoomLevel: Float = 1.0f,
     barcodeScanningEnabled: Boolean = true,
     barcodeScannerConfiguration: BarcodeScannerConfiguration = BarcodeScannerConfiguration(),
     finderConfiguration: FinderConfiguration = FinderConfiguration(),
@@ -76,8 +75,8 @@ fun BarcodeScannerViewClassic(
             }
         }
     }
-    LaunchedEffect(zoom) {
-        viewModel.zoomState.value = ZoomCameraValue(zoom, true)
+    LaunchedEffect(zoomLevel) {
+        viewModel.zoomState.value = ZoomCameraValue(zoomLevel, true)
     }
     LaunchedEffect(torchEnabled) {
         viewModel.flashEnabled.value = torchEnabled

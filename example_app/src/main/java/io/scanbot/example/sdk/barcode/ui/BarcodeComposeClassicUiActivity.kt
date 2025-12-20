@@ -7,30 +7,25 @@ import androidx.activity.compose.setContent
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import io.scanbot.example.sdk.barcode.ui.internal.BarcodeScannerViewClassic
+import io.scanbot.example.sdk.barcode.ui.internal.BarcodeScannerCustomUI
 import io.scanbot.sdk.barcode.BarcodeItem
 import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.barcode.textWithExtension
@@ -43,7 +38,6 @@ import io.scanbot.sdk.ui_v2.common.components.ScanbotCameraPermissionView
 import kotlinx.coroutines.flow.SharedFlow
 import kotlin.random.Random
 
-
 class BarcodeComposeClassicUiActivity : ComponentActivity() {
 
     @androidx.annotation.OptIn(ExperimentalCamera2Interop::class)
@@ -52,24 +46,29 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
 
         setContent {
             Column(modifier = Modifier.systemBarsPadding()) {
-                // Modify Zoom value here:
+                // Use these states to control camera, torch and zoom
                 val zoom = remember { mutableFloatStateOf(1.0f) }
                 val torchEnabled = remember { mutableStateOf(false) }
                 val cameraEnabled = remember { mutableStateOf(true) }
 
-                BarcodeScannerViewClassic(
+                // Unused in this example, but you may use it to
+                // enable/disable barcode scanning dynamically
+                val barcodeScanningEnabled = remember { mutableStateOf(true) }
+
+                BarcodeScannerCustomUI(
                     // Modify Size here:
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1.0f),
                     finderConfiguration = FinderConfiguration(
+                        // Modify aspect ratio of the viewfinder here:
                         aspectRatio = AspectRatio(1.0, 1.0),
                         // Change view finder overlay color here:
                         overlayColor = Color.Transparent,
                         // Change view finder stroke color here:
                         strokeColor = Color.Transparent,
 
-                        // Alternatively, you can provide completely custom finder content:
+                        // Alternatively, it is possible to provide a completely custom finder content:
                         finderContent = {
                             // Box with border stroke color as an example of custom finder content
                             Box(
@@ -96,8 +95,9 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                             )
-                        }, bottomContent = {
-                            // You can add custom buttons and other elements here:
+                        },
+                        bottomContent = {
+                            // You may add custom buttons and other elements here:
                             Text(
                                 "Custom Bottom Content",
                                 color = Color.White,
@@ -108,21 +108,24 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
                         }
                     ),
                     cameraEnabled = cameraEnabled.value,
+                    barcodeScanningEnabled = barcodeScanningEnabled.value,
                     torchEnabled = torchEnabled.value,
-                    zoom = zoom.floatValue,
+                    zoomLevel = zoom.floatValue,
                     permissionView = {
                         // View that will be shown while camera permission is not granted
                         ScanbotCameraPermissionView(
                             modifier = Modifier.fillMaxSize(),
                             bottomContentPadding = 0.dp,
                             permissionConfig = CameraPermissionScreen(),
-                            onClose = { // Handle permission screen close if needed
+                            onClose = {
+                                // Handle permission screen close if needed
                             })
                     },
                     arPolygonView = { barcodesFlow, framesFlow ->
                         // Configure AR overlay polygon appearance inside CustomBarcodesArView if needed
                         CustomBarcodesArView(
-                            barcodesFlow = barcodesFlow, framesFlow = framesFlow, onBarcodeClick = {
+                            barcodesFlow = barcodesFlow, framesFlow = framesFlow,
+                            onBarcodeClick = {
                                 // Handle barcode click on barcode from AR overlay if needed
                             }, density = LocalDensity.current
                         )
@@ -175,11 +178,30 @@ fun CustomBarcodesArView(
     ScanbotBarcodesArOverlay(
         barcodesFlow,
         getData = { barcodeItem -> barcodeItem.textWithExtension },
+        getPolygonStyle = { defaultStyle, barcodeItem ->
+            // Customize polygon style here.
+            // You may use barcodeItem to apply different styles for different barcode types, etc.
+            defaultStyle.copy(
+                drawPolygon = true,
+                useFill = true,
+                useFillHighlighted = true,
+                cornerRadius = density.run { 20.dp.toPx() },
+                cornerHighlightedRadius = density.run { 20.dp.toPx() },
+                strokeWidth = density.run { 5.dp.toPx() },
+                strokeHighlightedWidth = density.run { 5.dp.toPx() },
+                strokeColor = Color.Green,
+                strokeHighlightedColor = Color.Red,
+                fillColor = Color.Green.copy(alpha = 0.3f),
+                fillHighlightedColor = Color.Red.copy(alpha = 0.3f),
+                shouldDrawShadows = false
+            )
+        },
         shouldHighlight = { barcodeItem ->
             // Here you can implement any custom logic.
             false
         },
         view = { path, barcodeItem, data, shouldHighlight ->
+            // If only polygon is needed without any additional UI, leave this block empty
         },
 
 // Uncomment and  Customize AR view for barcode polygon here if needed
@@ -209,23 +231,6 @@ fun CustomBarcodesArView(
 //                )
 //            }
 //        },
-        getPolygonStyle = { defaultStyle, barcodeItem ->
-            // Customize polygon style depending on custom logic or barcodeItem data
-            defaultStyle.copy(
-                drawPolygon = true,
-                useFill = true,
-                useFillHighlighted = true,
-                cornerRadius = density.run { 20.dp.toPx() },
-                cornerHighlightedRadius = density.run { 20.dp.toPx() },
-                strokeWidth = density.run { 5.dp.toPx() },
-                strokeHighlightedWidth = density.run { 5.dp.toPx() },
-                strokeColor = Color.Green,
-                strokeHighlightedColor = Color.Red,
-                fillColor = Color.Green.copy(alpha = 0.3f),
-                fillHighlightedColor = Color.Red.copy(alpha = 0.3f),
-                shouldDrawShadows = false
-            )
-        },
         frameFlow = framesFlow,
         onClick = onBarcodeClick,
     )
