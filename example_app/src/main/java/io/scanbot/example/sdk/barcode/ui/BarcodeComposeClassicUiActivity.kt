@@ -63,14 +63,14 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
                     finderConfiguration = FinderConfiguration(
                         // Modify aspect ratio of the viewfinder here:
                         aspectRatio = AspectRatio(1.0, 1.0),
-                        // Change view finder overlay color here:
+                        // Change viewfinder overlay color here:
                         overlayColor = Color.Transparent,
-                        // Change view finder stroke color here:
+                        // Change viewfinder stroke color here:
                         strokeColor = Color.Transparent,
 
-                        // Alternatively, it is possible to provide a completely custom finder content:
+                        // Alternatively, it is possible to provide a completely custom viewfinder content:
                         finderContent = {
-                            // Box with border stroke color as an example of custom finder content
+                            // Box with border stroke color as an example of custom viewfinder content
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -168,7 +168,6 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
 
 @Composable
 fun CustomBarcodesArView(
-    // Flows providing barcode results and camera frames. Currently its not possible to use them without the SharedFlow we will investigate further
     barcodesFlow: SharedFlow<BarcodeScannerResult?>,
     framesFlow: SharedFlow<FrameHandler.Frame>,
     onBarcodeClick: (BarcodeItem) -> Unit = {},
