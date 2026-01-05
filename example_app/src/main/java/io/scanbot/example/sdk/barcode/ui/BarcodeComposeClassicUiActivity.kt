@@ -25,12 +25,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import io.scanbot.example.sdk.barcode.ui.internal.BarcodeScannerCustomUI
 import io.scanbot.sdk.barcode.BarcodeItem
 import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.barcode.textWithExtension
 import io.scanbot.sdk.camera.FrameHandler
 import io.scanbot.sdk.common.AspectRatio
+import io.scanbot.sdk.ui_v2.barcode.BarcodeScannerCustomUI
 import io.scanbot.sdk.ui_v2.barcode.components.ar_tracking.ScanbotBarcodesArOverlay
 import io.scanbot.sdk.ui_v2.common.CameraPermissionScreen
 import io.scanbot.sdk.ui_v2.common.camera.FinderConfiguration
