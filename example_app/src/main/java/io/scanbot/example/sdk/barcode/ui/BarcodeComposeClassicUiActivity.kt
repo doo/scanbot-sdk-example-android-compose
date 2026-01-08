@@ -25,6 +25,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import io.scanbot.sdk.barcode.BarcodeFormat
+import io.scanbot.sdk.barcode.BarcodeFormatCommonConfiguration
 import io.scanbot.sdk.barcode.BarcodeItem
 import io.scanbot.sdk.barcode.BarcodeScannerResult
 import io.scanbot.sdk.barcode.textWithExtension
@@ -51,15 +53,30 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
                 val torchEnabled = remember { mutableStateOf(false) }
                 val cameraEnabled = remember { mutableStateOf(true) }
 
-                // Unused in this example, but you may use it to
+                // Unused in this example, but this may be used to
                 // enable/disable barcode scanning dynamically
                 val barcodeScanningEnabled = remember { mutableStateOf(true) }
 
                 BarcodeScannerCustomUI(
-                    // Modify Size here:
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1.0f),
+                    // To configure barcode scanner behavior and symbologies,
+                    // see https://docs.scanbot.io/android/barcode-scanner-sdk/general-scanner-configuration/filtering-barcode-symbologies/ for details:
+                    //
+                    // For example, to filter specific barcode formats, uncomment and modify BarcodeScannerConfiguration here:
+                    // barcodeScannerConfiguration = io.scanbot.sdk.barcode.BarcodeScannerConfiguration(
+                    //     barcodeFormatConfigurations = listOf(
+                    //         BarcodeFormatCommonConfiguration(
+                    //             formats = listOf(
+                    //                 BarcodeFormat.QR_CODE,
+                    //                 BarcodeFormat.CODE_128,
+                    //                 BarcodeFormat.EAN_13
+                    //             )
+                    //         )
+                    //     )
+                    // ),
+                    cameraEnabled = cameraEnabled.value,
+                    barcodeScanningEnabled = barcodeScanningEnabled.value,
+                    torchEnabled = torchEnabled.value,
+                    zoomLevel = zoom.floatValue,
                     finderConfiguration = FinderConfiguration(
                         // Modify aspect ratio of the viewfinder here:
                         aspectRatio = AspectRatio(1.0, 1.0),
@@ -97,7 +114,7 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
                             )
                         },
                         bottomContent = {
-                            // You may add custom buttons and other elements here:
+                            // Custom buttons and other elements can be added here:
                             Text(
                                 "Custom Bottom Content",
                                 color = Color.White,
@@ -107,10 +124,6 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
                             )
                         }
                     ),
-                    cameraEnabled = cameraEnabled.value,
-                    barcodeScanningEnabled = barcodeScanningEnabled.value,
-                    torchEnabled = torchEnabled.value,
-                    zoomLevel = zoom.floatValue,
                     permissionView = {
                         // View that will be shown while camera permission is not granted
                         ScanbotCameraPermissionView(
@@ -139,6 +152,10 @@ class BarcodeComposeClassicUiActivity : ComponentActivity() {
                             "BarcodeComposeClassic", "Scanned barcodes: ${barcodeResult.barcodes}"
                         )
                     },
+                    // Modify Size of the widget here:
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1.0f),
                 )
                 Row {
                     Button(modifier = Modifier.weight(1f), onClick = {
@@ -179,7 +196,7 @@ fun CustomBarcodesArView(
         getData = { barcodeItem -> barcodeItem.textWithExtension },
         getPolygonStyle = { defaultStyle, barcodeItem ->
             // Customize polygon style here.
-            // You may use barcodeItem to apply different styles for different barcode types, etc.
+            // BarcodeItem can be used to apply different styles for different barcode types, etc.
             defaultStyle.copy(
                 drawPolygon = true,
                 useFill = true,
@@ -196,7 +213,7 @@ fun CustomBarcodesArView(
             )
         },
         shouldHighlight = { barcodeItem ->
-            // Here you can implement any custom logic.
+            // Here a custom logic can be implemented to determine whether a barcode should be highlighted.
             false
         },
         view = { path, barcodeItem, data, shouldHighlight ->
